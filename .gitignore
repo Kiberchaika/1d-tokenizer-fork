@@ -1,0 +1,5 @@
+.venv*
+.venv/*
+data/*
+__*
+events.out*
