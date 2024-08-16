@@ -52,18 +52,19 @@ class TiTok(nn.Module, PyTorchModelHubMixin, tags=["arxiv:2304.12244", "image-to
             codebook_size=config.model.vq_model.codebook_size,
             token_size=config.model.vq_model.token_size,
             commitment_cost=config.model.vq_model.commitment_cost,
-            use_l2_norm=config.model.vq_model.use_l2_norm,)
+            use_l2_norm=config.model.vq_model.use_l2_norm,
+        )
         
         self.pixel_quantize = Pixel_Quantizer(
             num_embeddings=1024, embedding_dim=256, commitment_cost=0.25)
         self.pixel_decoder = Pixel_Decoder(OmegaConf.create(
-            {"channel_mult": [1, 1, 2, 2, 4],
-             "num_resolutions": 5,
+            {"channel_mult": [1, 1, 2],  # Reduced number of multipliers
+             "num_resolutions": 3,  # Reduced number of resolutions
              "dropout": 0.0,
-             "hidden_channels": 128,
-             "num_channels": 3,
+             "hidden_channels": 64,  # Reduced hidden channels
+             "num_channels": 1,  # Changed to 1 for MNIST
              "num_res_blocks": 2,
-             "resolution": 256,
+             "resolution": 28,  # Changed to 28 for MNIST
              "z_channels": 256}))
         
     def _save_pretrained(self, save_directory: Path) -> None:
@@ -103,7 +104,7 @@ class TiTok(nn.Module, PyTorchModelHubMixin, tags=["arxiv:2304.12244", "image-to
             'nchw,cd->ndhw', decoded_latent.softmax(1),
             self.pixel_quantize.embedding.weight)
         decoded = self.pixel_decoder(quantized_states)
-        return decoded
+        return decoded  # This should now be [32, 1, 28, 28]
     
     def decode_tokens(self, tokens):
         tokens = tokens.squeeze(1)

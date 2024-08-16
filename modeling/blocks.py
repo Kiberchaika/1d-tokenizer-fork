@@ -229,7 +229,7 @@ class TiTokEncoder(nn.Module):
             }[self.model_size]
         
         self.patch_embed = nn.Conv2d(
-            in_channels=3, out_channels=self.width,
+            in_channels=config.model.vq_model.inputcolors, out_channels=self.width,
               kernel_size=self.patch_size, stride=self.patch_size, bias=True)
         
         scale = self.width ** -0.5
