@@ -3,3 +3,5 @@
 data/*
 __*
 events.out*
+*.pth
+checkpoints/
